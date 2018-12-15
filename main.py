@@ -7,10 +7,10 @@ from data_gen import DataGenerator
 
 #defining a function to load the dataset
 def load_dataset(path):
-    data = load_files(path)
-    driver_images = np.array(data['filenames'])
-    driver_activities = np_utils.to_categorical(np.array(data['target']))
-    return driver_images, driver_activities
+	data = load_files(path)
+	driver_images = np.array(data['filenames'])
+	driver_activities = np_utils.to_categorical(np.array(data['target']))
+	return driver_images, driver_activities
 
 #loading the datasets
 #change the directory in the github as well
@@ -45,6 +45,51 @@ validation_generator = DataGenerator(images_val, targets_val, **params)
 testing_generator = DataGenerator(images_test, targets_test, **params)
 
 ################################################################
+
+
+
+#directly training with entire data
+
+from keras.applications.resnet50 import ResNet50
+
+# define ResNet50 model
+ResNet50_model = ResNet50(weights='imagenet')
+
+
+from keras.preprocessing import image                  
+from tqdm import tqdm
+
+def path_to_tensor(img_path):
+	# loads RGB image as PIL.Image.Image type
+	img = image.load_img(img_path, target_size=(224, 224))
+	# convert PIL.Image.Image type to 3D tensor with shape (224, 224, 3)
+	x = image.img_to_array(img)
+	# convert 3D tensor to 4D tensor with shape (1, 224, 224, 3) and return 4D tensor
+	return np.expand_dims(x, axis=0)
+
+def paths_to_tensor(img_paths):
+	list_of_tensors = [path_to_tensor(img_path) for img_path in tqdm(img_paths)]
+	return np.vstack(list_of_tensors)
+
+
+from PIL import ImageFile                            
+ImageFile.LOAD_TRUNCATED_IMAGES = True                 
+
+# pre-process the data for Keras
+train_tensors = paths_to_tensor(train_files).astype('float32')/255
+valid_tensors = paths_to_tensor(valid_files).astype('float32')/255
+test_tensors = paths_to_tensor(test_files).astype('float32')/255
+
+
+#################################################################
+
+
+
+
+
+
+
+
 
 
 # Constructing Vanilla model
@@ -89,18 +134,35 @@ epochs = 25
 
 ### .
 
-checkpointer = ModelCheckpoint(filepath='weights.best.from_scratch.hdf5', 
+checkpointer = ModelCheckpoint(filepath='weights.best.from_scratch.vanilla.hdf5', 
                                verbose=1, save_best_only=True)
 
-model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs= epochs, callbacks=[checkpointer], use_multiprocessing=True, workers=6)
+#model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs= epochs, callbacks=[checkpointer], use_multiprocessing=True, workers=6)
 
+#direct_train
+model.fit(train_tensors, train_targets, 
+          validation_data=(valid_tensors, valid_targets),
+          epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
+
+#load model with best validation loss
+model.load_weights('saved_models/weights.best.from_scratch.vanilla.hdf5')
+
+
+dog_breed_predictions = [np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
+
+# report test accuracy
+test_accuracy = 100*np.sum(np.array(dog_breed_predictions)==np.argmax(test_targets, axis=1))/len(dog_breed_predictions)
+print('Test accuracy: %.4f%%' % test_accuracy)
+
+
+"""
 # get index of predicted dog breed for each image in test set
 test_accuracy = model.evaluate_generator(generator=testing_generator,use_multiprocessing=True, workers=6)#[np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
 
 # report test accuracy
 #test_accuracy = 100*np.sum(np.array(action_predictions)==np.argmax(test_targets, axis=1))/len(action_predictions)
 print('Test accuracy: %.4f%%' % test_accuracy[0])
-
+"""
 
 
 
