@@ -94,7 +94,12 @@ checkpointer = ModelCheckpoint(filepath='weights.best.from_scratch.hdf5',
 
 model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs= epochs, callbacks=[checkpointer], use_multiprocessing=True, workers=6)
 
+# get index of predicted dog breed for each image in test set
+test_accuracy = model.evaluate_generator(generator=testing_generator,use_multiprocessing=True, workers=6)#[np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
 
+# report test accuracy
+#test_accuracy = 100*np.sum(np.array(action_predictions)==np.argmax(test_targets, axis=1))/len(action_predictions)
+print('Test accuracy: %.4f%%' % test_accuracy[0])
 
 
 
