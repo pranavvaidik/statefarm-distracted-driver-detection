@@ -80,13 +80,16 @@ vgg_model.summary()
 # get bottleneck features
 try:
 	bottleneck_features_test = np.load('bottleneck_features_test.npy')
+	print("Bottleneck features for test set loaded")
 except:
 	print("Bottleneck features for test set not found")
 	bottleneck_features_test = vgg_model.predict(test_tensors)
 	np.save('bottleneck_features_test.npy', bottleneck_features_test)
 
 try:
-	bottleneck_features_train = np.load(open('bottleneck_features_train.npy'))	
+	bottleneck_features_train = np.load('bottleneck_features_train.npy')
+	print("Bottleneck features for train set loaded")
+
 except:
 	print("Bottleneck features for train set not found")
 	bottleneck_features_train = vgg_model.predict(train_tensors)
@@ -94,6 +97,7 @@ except:
 
 try:
 	bottleneck_features_val = np.load('bottleneck_features_validation.npy')
+	print("Bottleneck features for validation set loaded")
 except:
 	print("Bottleneck features for validation set not found")
 	bottleneck_features_val = vgg_model.predict(valid_tensors)
@@ -136,15 +140,15 @@ checkpointer = ModelCheckpoint(filepath='weights.best.from_scratch.vgg16.hdf5',
 #model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs= epochs, callbacks=[checkpointer], use_multiprocessing=True, workers=6)
 
 #direct_train
-vgg_model.fit(bottleneck_features_train, targets_train, 
+top_model.fit(bottleneck_features_train, targets_train, 
           validation_data=(bottleneck_features_val, targets_val),
           epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
 
 #load model with best validation loss
-vgg_model.load_weights('weights.best.from_scratch.vgg16.hdf5')
+top_model.load_weights('weights.best.from_scratch.vgg16.hdf5')
 
 
-predictions = [np.argmax(vgg_model.predict(np.expand_dims(tensor, axis=0))) for tensor in bottleneck_features_test]
+predictions = [np.argmax(top_model.predict(np.expand_dims(tensor, axis=0))) for tensor in bottleneck_features_test]
 
 # report test accuracy
 test_accuracy = 100*np.sum(np.array(predictions)==np.argmax(targets_test, axis=1))/len(predictions)
