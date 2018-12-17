@@ -77,7 +77,63 @@ vgg_model = VGG16(weights='imagenet', include_top = False)
 vgg_model.summary()
 
 
+# get bottleneck features
+
+bottleneck_features_train = vgg_model.predict(train_tensors)
+bottleneck_features_val = vgg_model.predict(train_val)
+bottleneck_features_test = vgg_model.predict(train_test)
+
+print("Bottleneck features obtained")
+
 #build top model
+
+top_model = Sequential()
+top_model.add(Flatten(input_shape=vgg_model.output_shape[1:]))
+top_model.add(Dense(256, activation='relu'))
+top_model.add(Dropout(0.5))
+top_model.add(Dense(10, activation='sigmoid'))
+
+
+top_model.summary()
+
+top_model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# train the top layers
+
+
+print("Now, training top layers : ")
+
+from keras.callbacks import ModelCheckpoint  
+
+### TODO: specify the number of epochs that you would like to use to train the model.
+
+epochs = 25
+
+###
+
+checkpointer = ModelCheckpoint(filepath='weights.best.from_scratch.vgg16.hdf5', 
+                               verbose=1, save_best_only=True)
+
+#model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs= epochs, callbacks=[checkpointer], use_multiprocessing=True, workers=6)
+
+#direct_train
+model.fit(bottleneck_features_train, targets_train, 
+          validation_data=(bottleneck_features_val, targets_val),
+          epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
+
+#load model with best validation loss
+model.load_weights('weights.best.from_scratch.vgg16.hdf5')
+
+
+predictions = [np.argmax(vgg_model.predict(np.expand_dims(tensor, axis=0))) for tensor in bottleneck_features_test]
+
+# report test accuracy
+test_accuracy = 100*np.sum(np.array(predictions)==np.argmax(targets_test, axis=1))/len(predictions)
+print('Test accuracy: %.4f%%' % test_accuracy)
+
+
+
+
 
 
 
