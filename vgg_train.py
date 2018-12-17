@@ -154,7 +154,7 @@ val_pred = [np.argmax(top_model.predict(np.expand_dims(tensor, axis=0))) for ten
 predictions = [np.argmax(top_model.predict(np.expand_dims(tensor, axis=0))) for tensor in bottleneck_features_test]
 
 
-val_accuracy = 100*np.sum(np.array(val_pred)==np.argmax(val_pred, axis=1))/len(val_pred)
+val_accuracy = 100*np.sum(np.array(val_pred)==np.argmax(targets_val, axis=1))/len(val_pred)
 print('Validation accuracy: %.4f%%' % val_accuracy)
 
 
