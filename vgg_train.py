@@ -93,7 +93,7 @@ except:
 try:
 	bottleneck_features_val = np.load('bottleneck_features_validation.npy')
 except:
-	bottleneck_features_val = vgg_model.predict(val_tensors)
+	bottleneck_features_val = vgg_model.predict(valid_tensors)
 	np.save('bottleneck_features_validation.npy', bottleneck_features_val)
 
 
