@@ -117,12 +117,12 @@ checkpointer = ModelCheckpoint(filepath='weights.best.from_scratch.vgg16.hdf5',
 #model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs= epochs, callbacks=[checkpointer], use_multiprocessing=True, workers=6)
 
 #direct_train
-model.fit(bottleneck_features_train, targets_train, 
+vgg_model.fit(bottleneck_features_train, targets_train, 
           validation_data=(bottleneck_features_val, targets_val),
           epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
 
 #load model with best validation loss
-model.load_weights('weights.best.from_scratch.vgg16.hdf5')
+vgg_model.load_weights('weights.best.from_scratch.vgg16.hdf5')
 
 
 predictions = [np.argmax(vgg_model.predict(np.expand_dims(tensor, axis=0))) for tensor in bottleneck_features_test]
