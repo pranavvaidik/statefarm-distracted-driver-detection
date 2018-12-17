@@ -145,7 +145,7 @@ model.fit(train_tensors, targets_train,
           epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
 
 #load model with best validation loss
-model.load_weights('saved_models/weights.best.from_scratch.vanilla.hdf5')
+model.load_weights('weights.best.from_scratch.vanilla.hdf5')
 
 
 dog_breed_predictions = [np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
@@ -164,7 +164,7 @@ test_accuracy = model.evaluate_generator(generator=testing_generator,use_multipr
 print('Test accuracy: %.4f%%' % test_accuracy[0])
 """
 
-
+##################
 
 
 
