@@ -81,18 +81,21 @@ vgg_model.summary()
 try:
 	bottleneck_features_test = np.load('bottleneck_features_test.npy')
 except:
+	print("Bottleneck features for test set not found")
 	bottleneck_features_test = vgg_model.predict(test_tensors)
 	np.save('bottleneck_features_test.npy', bottleneck_features_test)
 
 try:
 	bottleneck_features_train = np.load(open('bottleneck_features_train.npy'))	
 except:
+	print("Bottleneck features for train set not found")
 	bottleneck_features_train = vgg_model.predict(train_tensors)
 	np.save('bottleneck_features_train.npy', bottleneck_features_train)
 
 try:
 	bottleneck_features_val = np.load('bottleneck_features_validation.npy')
 except:
+	print("Bottleneck features for validation set not found")
 	bottleneck_features_val = vgg_model.predict(valid_tensors)
 	np.save('bottleneck_features_validation.npy', bottleneck_features_val)
 
