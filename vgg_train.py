@@ -40,7 +40,7 @@ def build_training_sets():
 	#import os
 	#print(os.listdir("imgs/train"))
 
-	return images_train images_test, images_val, targets_train, targets_test, targets_val
+	return images_train, images_test, images_val, targets_train, targets_test, targets_val
 
 
 ################################################################
@@ -69,7 +69,7 @@ from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True                 
 
 
-images_train images_test, images_val, targets_train, targets_test, targets_val = build_training_sets()
+images_train, images_test, images_val, targets_train, targets_test, targets_val = build_training_sets()
 print(" Loaded the train, test and validation sets successfully!! ")
 
 # pre-process the data for Keras
