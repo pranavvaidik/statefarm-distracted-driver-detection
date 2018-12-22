@@ -90,6 +90,19 @@ vgg_model = VGG16(weights='imagenet', include_top = False)
 
 vgg_model.summary()
 
+vgg_layers = [l for l in vgg_model.layers]
+
+trimmed_model = Sequential()
+
+for i in range(len(vgg_layers)-12):
+	vgg_layers[i].trainable = False
+	trimmed_model.add(vgg_layers[i])
+
+print("Trimmed")
+trimmed_model.summary()
+
+trimmed_model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+
 
 # get bottleneck features
 try:
@@ -97,7 +110,7 @@ try:
 	print("Bottleneck features for test set loaded")
 except:
 	print("Bottleneck features for test set not found")
-	bottleneck_features_test = vgg_model.predict(test_tensors)
+	bottleneck_features_test = trimmed_model.predict(test_tensors)
 	np.save('bottleneck_features_test.npy', bottleneck_features_test)
 
 try:
@@ -106,7 +119,7 @@ try:
 
 except:
 	print("Bottleneck features for train set not found")
-	bottleneck_features_train = vgg_model.predict(train_tensors)
+	bottleneck_features_train = trimmed_model.predict(train_tensors)
 	np.save('bottleneck_features_train.npy', bottleneck_features_train)
 
 try:
@@ -114,7 +127,7 @@ try:
 	print("Bottleneck features for validation set loaded")
 except:
 	print("Bottleneck features for validation set not found")
-	bottleneck_features_val = vgg_model.predict(valid_tensors)
+	bottleneck_features_val = timmed_model.predict(valid_tensors)
 	np.save('bottleneck_features_validation.npy', bottleneck_features_val)
 
 
