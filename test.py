@@ -44,10 +44,13 @@ print("Trimmed")
 trimmed_model.summary()
 trimmed_model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
+# generating bottleneck features as generator objetcs, steps are based on the  number of tensors in each set and also the data augmentation
+bottleneck_features_train = trimmed_model.predict_generator(train_gen, steps = 1000)
+bottleneck_features_validation = trimmed_model.predict_generator(validation_gen, steps = 120)
+bottleneck_features_test = trimmed_model.predict_generator(test_gen, steps = 120)
 
-bottleneck_features_train = trimmed_model.predict_generator(train_gen)
-bottleneck_features_validation = trimmed_model.predict_generator(validation_gen)
-bottleneck_features_test = trimmed_model.predict_generator(test_gen)
+
+
 
 np.save(open('bottleneck_features_train.npy', 'w'), bottleneck_features_train)
 np.save(open('bottleneck_features_validation.npy', 'w'), bottleneck_features_validation)
