@@ -4,6 +4,10 @@ from keras.utils import np_utils
 import numpy as np
 from glob import glob
 from data_gen import DataGenerator
+from keras.preprocessing.image import ImageDataGenerator
+from keras.applications import VGG16
+from keras.models import Sequential
+from keras.layers import Dropout, Flatten, Dense
 from keras.preprocessing import image                  
 from tqdm import tqdm
 
