@@ -6,7 +6,7 @@ from keras.layers import Dropout, Flatten, Dense
 from keras.preprocessing import image                  
 from tqdm import tqdm
 import numpy as np
-
+from keras.engine import InputLayer
 
 
 
