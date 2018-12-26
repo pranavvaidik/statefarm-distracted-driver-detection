@@ -41,9 +41,12 @@ vgg_model = VGG16(weights='imagenet', include_top = False, input_shape = (256,25
 vgg_layers = [l for l in vgg_model.layers]
 
 model = Sequential()
-
+input_layer = InputLayer(input_shape=(256, 256, 3), name="input_1")
+model.add(input_layer)
 for layer in vgg_layers[:11]:
 	layer.trainable = False
+	
+for layer in vgg_layers:
 	model.add(layer)
 
 model.add(Flatten())
