@@ -1,5 +1,5 @@
 from keras.preprocessing.image import ImageDataGenerator
-from custom_functions import generate_bottleneck_features, build_training_sets
+from custom_functions import generate_bottleneck_features, build_training_sets, paths_to_tensor
 from keras.applications import VGG16
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense
